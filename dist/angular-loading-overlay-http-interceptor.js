@@ -73,9 +73,26 @@
 	"use strict";
 	var BsLoadingOverlayHttpInterceptorInterceptor = (function () {
 	    function BsLoadingOverlayHttpInterceptorInterceptor(config, bsLoadingOverlayService) {
+	        var _this = this;
 	        this.config = config;
 	        this.bsLoadingOverlayService = bsLoadingOverlayService;
 	        this.requestsCount = 0;
+	        this.request = function (config) {
+	            _this.onRequest();
+	            return config;
+	        };
+	        this.requestError = function (rejection) {
+	            _this.onResponse();
+	            return rejection;
+	        };
+	        this.response = function (response) {
+	            _this.onResponse();
+	            return response;
+	        };
+	        this.responseError = function (rejection) {
+	            _this.onResponse();
+	            return rejection;
+	        };
 	    }
 	    BsLoadingOverlayHttpInterceptorInterceptor.prototype.onRequest = function () {
 	        if (this.requestsCount === 0) {
@@ -89,26 +106,6 @@
 	            this.bsLoadingOverlayService.stop(this.config);
 	        }
 	    };
-	    BsLoadingOverlayHttpInterceptorInterceptor.prototype.request = function (config) {
-	        this.onRequest();
-	        return config;
-	    };
-	    ;
-	    BsLoadingOverlayHttpInterceptorInterceptor.prototype.requestError = function (rejection) {
-	        this.onResponse();
-	        return rejection;
-	    };
-	    ;
-	    BsLoadingOverlayHttpInterceptorInterceptor.prototype.response = function (response) {
-	        this.onResponse();
-	        return response;
-	    };
-	    ;
-	    BsLoadingOverlayHttpInterceptorInterceptor.prototype.responseError = function (rejection) {
-	        this.onResponse();
-	        return rejection;
-	    };
-	    ;
 	    return BsLoadingOverlayHttpInterceptorInterceptor;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });

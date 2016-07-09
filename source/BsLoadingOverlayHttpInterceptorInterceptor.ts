@@ -25,22 +25,22 @@ export default class BsLoadingOverlayHttpInterceptorInterceptor implements ng.IH
         }
     }
 
-    request(config: ng.IRequestConfig) {
+    request = (config: ng.IRequestConfig) => {
         this.onRequest();
         return config;
     };
 
-    requestError(rejection) {
+    requestError = (rejection) => {
         this.onResponse();
         return rejection;
     };
 
-    response(response: ng.IHttpPromiseCallbackArg<any>) {
+    response = (response: ng.IHttpPromiseCallbackArg<any>) => {
         this.onResponse();
         return response;
     };
 
-    responseError(rejection) {
+    responseError = (rejection) => {
         this.onResponse();
         return rejection;
     };
