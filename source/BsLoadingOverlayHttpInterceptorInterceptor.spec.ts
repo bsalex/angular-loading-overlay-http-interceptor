@@ -58,6 +58,13 @@ describe('Interceptor', () => {
         expect(service.start.calledOnce).toBeTruthy();
     });
 
+    it('should call service start once on request called after response', () => {
+        interceptor.response(responsePromise);
+        interceptor.request(requestConfig);
+
+        expect(service.start.calledOnce).toBeTruthy();
+    });
+
     it('should return provided rejection on request error', () => {
         const rejection = {rejectionField: 123};
         let returnedRejection = interceptor.requestError(rejection);

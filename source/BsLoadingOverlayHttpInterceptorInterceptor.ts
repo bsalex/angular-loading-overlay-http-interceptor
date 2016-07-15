@@ -18,7 +18,7 @@ export default class BsLoadingOverlayHttpInterceptorInterceptor implements ng.IH
     }
 
     private onResponse() {
-        this.requestsCount --;
+        this.requestsCount = Math.max(0, this.requestsCount - 1);
 
         if (this.requestsCount === 0) {
             this.bsLoadingOverlayService.stop(this.config);
