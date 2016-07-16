@@ -1,11 +1,11 @@
 import BsLoadingOverlayHttpInterceptor from './BsLoadingOverlayHttpInterceptorInterceptor';
 import {BsLoadingOverlayService} from 'angular-loading-overlay/source/BsLoadingOverlayService';
-import IBsLoadingOverlayOptions from 'angular-loading-overlay/source/IBsLoadingOverlayOptions';
+import IBsLoadingOverlayHttpInterceptorOptions from './IBsLoadingOverlayHttpInterceptorOptions';
 
 describe('Interceptor', () => {
     let interceptor: BsLoadingOverlayHttpInterceptor;
     let service: any;
-    let options: IBsLoadingOverlayOptions;
+    let options: IBsLoadingOverlayHttpInterceptorOptions;
     let requestConfig: ng.IRequestConfig;
     let responsePromise: ng.IHttpPromiseCallbackArg<any>;
 
@@ -24,74 +24,109 @@ describe('Interceptor', () => {
             data: 'test data'
         };
 
+        options = {
+            referenceId: 'some reference id'
+        };
+
         interceptor = new BsLoadingOverlayHttpInterceptor(options, service);
     });
 
-    it('should return provided options on request', () => {
-        let returnedRequest = interceptor.request(requestConfig);
-        expect(returnedRequest).toEqual(requestConfig);
+    describe('request', () => {
+        it('should return provided request config', () => {
+            let returnedRequestConfig = interceptor.request(requestConfig);
+            expect(returnedRequestConfig).toEqual(requestConfig);
+        });
+
+        it('should call service start with provided options', () => {
+            interceptor.request(requestConfig);
+
+            expect(service.start.calledWith(options)).toBeTruthy();
+        });
+
+        it('should call service start once', () => {
+            interceptor.request(requestConfig);
+
+            expect(service.start.calledOnce).toBeTruthy();
+        });
+
+        it('should call service start once on called twice', () => {
+            interceptor.request(requestConfig);
+            interceptor.request(requestConfig);
+
+            expect(service.start.calledOnce).toBeTruthy();
+        });
+
+        it('should call service start once on called twice', () => {
+            interceptor.request(requestConfig);
+            interceptor.request(requestConfig);
+
+            expect(service.start.calledOnce).toBeTruthy();
+        });
+
+        it('should call service start once on called after response', () => {
+            interceptor.response(responsePromise);
+            interceptor.request(requestConfig);
+
+            expect(service.start.calledOnce).toBeTruthy();
+        });
+
+        describe('with matcher provided', () => {
+            beforeEach(() => {
+                options = {
+                    requestsMatcher: (requestConfig) => requestConfig.url === 'some url'
+                };
+                interceptor = new BsLoadingOverlayHttpInterceptor(options, service);
+            });
+
+            it('should call service start once if requestMatcher returns true matching requestConfig', () => {
+                interceptor.request({
+                    url: 'some url',
+                    method: 'GET'
+                });
+
+                expect(service.start.calledOnce).toBeTruthy();
+            });
+
+            it('should not call service start if requestMatcher returns false matching requestConfig', () => {
+                interceptor.request({
+                    url: 'another url, no match here',
+                    method: 'GET'
+                });
+
+                expect(service.start.called).toBeFalsy();
+            });
+        });
     });
 
-    it('should call service start with provided options on request', () => {
-        interceptor.request(requestConfig);
+    describe('requestError', () => {
+        it('should return provided rejection', () => {
+            const rejection = {rejectionField: 123};
+            let returnedRejection = interceptor.requestError(rejection);
+            expect(returnedRejection).toEqual(rejection);
+        });
 
-        expect(service.start.calledWith(options)).toBeTruthy();
-    });
+        it('should call service stop once on called after request', () => {
+            interceptor.request(requestConfig);
+            interceptor.requestError(requestConfig);
 
-    it('should call service start once on request', () => {
-        interceptor.request(requestConfig);
+            expect(service.stop.calledOnce).toBeTruthy();
+        });
 
-        expect(service.start.calledOnce).toBeTruthy();
-    });
+        it('should call service stop with provided options on called after request', () => {
+            interceptor.request(requestConfig);
+            interceptor.requestError(requestConfig);
 
-    it('should call service start once on request called twice', () => {
-        interceptor.request(requestConfig);
-        interceptor.request(requestConfig);
+            expect(service.stop.calledWith(options)).toBeTruthy();
+        });
 
-        expect(service.start.calledOnce).toBeTruthy();
-    });
+        it('should call service stop once on called twice after request called twice', () => {
+            interceptor.request(requestConfig);
+            interceptor.request(requestConfig);
+            interceptor.requestError(requestConfig);
+            interceptor.requestError(requestConfig);
 
-    it('should call service start once on request called twice', () => {
-        interceptor.request(requestConfig);
-        interceptor.request(requestConfig);
-
-        expect(service.start.calledOnce).toBeTruthy();
-    });
-
-    it('should call service start once on request called after response', () => {
-        interceptor.response(responsePromise);
-        interceptor.request(requestConfig);
-
-        expect(service.start.calledOnce).toBeTruthy();
-    });
-
-    it('should return provided rejection on request error', () => {
-        const rejection = {rejectionField: 123};
-        let returnedRejection = interceptor.requestError(rejection);
-        expect(returnedRejection).toEqual(rejection);
-    });
-
-    it('should call service stop once on request error after request', () => {
-        interceptor.request(requestConfig);
-        interceptor.requestError(requestConfig);
-
-        expect(service.stop.calledOnce).toBeTruthy();
-    });
-
-    it('should call service stop with provided options on request error after request', () => {
-        interceptor.request(requestConfig);
-        interceptor.requestError(requestConfig);
-
-        expect(service.stop.calledWith(options)).toBeTruthy();
-    });
-
-    it('should call service stop once on request error called twice after request called twice', () => {
-        interceptor.request(requestConfig);
-        interceptor.request(requestConfig);
-        interceptor.requestError(requestConfig);
-        interceptor.requestError(requestConfig);
-
-        expect(service.stop.calledOnce).toBeTruthy();
+            expect(service.stop.calledOnce).toBeTruthy();
+        });
     });
 
     describe('response', () => {

@@ -74,12 +74,20 @@
 	var BsLoadingOverlayHttpInterceptorInterceptor = (function () {
 	    function BsLoadingOverlayHttpInterceptorInterceptor(config, bsLoadingOverlayService) {
 	        var _this = this;
+	        if (config === void 0) { config = {}; }
 	        this.config = config;
 	        this.bsLoadingOverlayService = bsLoadingOverlayService;
 	        this.requestsCount = 0;
-	        this.request = function (config) {
-	            _this.onRequest();
-	            return config;
+	        this.request = function (requestConfig) {
+	            if (_this.config.requestsMatcher) {
+	                if (_this.config.requestsMatcher(requestConfig)) {
+	                    _this.onRequest();
+	                }
+	            }
+	            else {
+	                _this.onRequest();
+	            }
+	            return requestConfig;
 	        };
 	        this.requestError = function (rejection) {
 	            _this.onResponse();

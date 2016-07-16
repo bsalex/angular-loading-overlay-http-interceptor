@@ -1,9 +1,9 @@
-import IBsLoadingOverlayOptions from 'angular-loading-overlay/source/IBsLoadingOverlayOptions';
+import IBsLoadingOverlayHttpInterceptorOptions from './IBsLoadingOverlayHttpInterceptorOptions';
 import {BsLoadingOverlayService} from 'angular-loading-overlay/source/BsLoadingOverlayService';
 
 export default class BsLoadingOverlayHttpInterceptorInterceptor implements ng.IHttpInterceptor {
     constructor(
-        private config: IBsLoadingOverlayOptions,
+        private config: IBsLoadingOverlayHttpInterceptorOptions = {},
         private bsLoadingOverlayService: BsLoadingOverlayService
     ) {}
 
@@ -27,9 +27,16 @@ export default class BsLoadingOverlayHttpInterceptorInterceptor implements ng.IH
         this.requestsCount = Math.max(0, newRequestsCount);
     }
 
-    request = (config: ng.IRequestConfig) => {
-        this.onRequest();
-        return config;
+    request = (requestConfig: ng.IRequestConfig) => {
+        if (this.config.requestsMatcher) {
+            if (this.config.requestsMatcher(requestConfig)) {
+                this.onRequest();
+            }
+        } else {
+            this.onRequest();
+        }
+
+        return requestConfig;
     };
 
     requestError = (rejection) => {
