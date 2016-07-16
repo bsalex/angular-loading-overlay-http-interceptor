@@ -107,6 +107,12 @@ describe('Interceptor', () => {
             expect(service.stop.calledOnce).toBeTruthy();
         });
 
+        it('should not call service stop on response called without request called', () => {
+            interceptor.response(responsePromise);
+
+            expect(service.stop.called).toBeFalsy();
+        });
+
         it('should call service stop with provided options on response called after request called', () => {
             interceptor.request(requestConfig);
             interceptor.response(responsePromise);

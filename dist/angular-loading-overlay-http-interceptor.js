@@ -101,10 +101,11 @@
 	        this.requestsCount++;
 	    };
 	    BsLoadingOverlayHttpInterceptorInterceptor.prototype.onResponse = function () {
-	        this.requestsCount = Math.max(0, this.requestsCount - 1);
-	        if (this.requestsCount === 0) {
+	        var newRequestsCount = this.requestsCount - 1;
+	        if (newRequestsCount === 0) {
 	            this.bsLoadingOverlayService.stop(this.config);
 	        }
+	        this.requestsCount = Math.max(0, newRequestsCount);
 	    };
 	    return BsLoadingOverlayHttpInterceptorInterceptor;
 	}());
