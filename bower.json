@@ -5,7 +5,7 @@
     "Alexander Beshchuk <bs.alex.mail@gmail.com>"
   ],
   "description": "Directive to manipulate overlays on async operations.",
-  "main": "dist/angular-loading-overlay-spin.js",
+  "main": "dist/angular-loading-overlay-http-interceptor.js",
   "keywords": [
     "angular",
     "loading",
