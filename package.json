@@ -1,6 +1,6 @@
 {
   "name": "angular-loading-overlay-http-interceptor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Angular loading overlay integration with http interceptor",
   "repository": {
     "type": "git",
